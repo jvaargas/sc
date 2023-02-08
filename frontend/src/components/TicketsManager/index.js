@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { 
   Badge,
@@ -111,6 +111,7 @@ const TicketsManager = () => {
   const [tabOpen] = useState("open");
   const [newTicketModalOpen, setNewTicketModalOpen] = useState(false);
   const [showAllTickets, setShowAllTickets] = useState(false);
+  const searchInputRef = useRef();
   const { user } = useContext(AuthContext);
 
   const [, setOpenCount] = useState(0);
@@ -164,10 +165,11 @@ const TicketsManager = () => {
       <Paper elevation={0} square className={classes.searchContainer}>
         <Search className={classes.searchIcon} />
         <input
-          type="text"
+          type="search"
           placeholder={i18n.t("tickets.search.placeholder")}
           className={classes.searchInput}
           value={searchParam}
+          inputRef={searchInputRef}
           onChange={handleSearch}
         />
       </Paper>
