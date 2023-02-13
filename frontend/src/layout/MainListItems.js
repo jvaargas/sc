@@ -119,6 +119,11 @@ const MainListItems = (props) => {
         primary={i18n.t("mainDrawer.listItems.quickAnswers")}
         icon={<QuestionAnswerOutlined />}
       />
+      <ListItemLink
+        to="/tags"
+        primary={i18n.t("mainDrawer.listItems.tags")}
+        icon={<LocalOffer />}
+      />
       <Can
         role={user.profile}
         perform="drawer-admin-items:view"
@@ -151,6 +156,31 @@ const MainListItems = (props) => {
               to="/settings"
               primary={i18n.t("mainDrawer.listItems.settings")}
               icon={<SettingsOutlined />}
+            />
+            <Divider className={classes.divider} />
+            <ListSubheader inset className={classes.sub}>
+              {i18n.t("mainDrawer.listItems.apititle")}
+            </ListSubheader>
+            <ListItemLink
+              to="/api"
+              primary={i18n.t("mainDrawer.listItems.api")}
+              icon={
+                <Code />
+              }
+            />
+            <ListItemLink
+              to="/apidocs"
+              primary={i18n.t("mainDrawer.listItems.apidocs")}
+              icon={
+                <MenuBook />
+              }
+            />
+            <ListItemLink
+              to="/apikey"
+              primary={i18n.t("mainDrawer.listItems.apikey")}
+              icon={
+                <VpnKeyRounded />
+              }
             />
           </>
         )}
