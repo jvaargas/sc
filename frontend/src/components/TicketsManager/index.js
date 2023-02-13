@@ -15,13 +15,11 @@ import {
   AllInboxRounded,
   HourglassEmptyRounded,
   MoveToInbox,
-  Search
-} from "@material-ui/icons";
+  } from "@material-ui/icons";
 
 import NewTicketModal from "../NewTicketModal";
 import TicketsList from "../TicketsList";
 import TabPanel from "../TabPanel";
-import { TagsFilter } from "../TagsFilter";
 import { Can } from "../Can";
 import TicketsQueueSelect from "../TicketsQueueSelect";
 
@@ -79,13 +77,6 @@ const useStyles = makeStyles((theme) => ({
     alignSelf: "center",
   },
 
-  searchInput: {
-    flex: 1,
-    border: "none",
-    borderRadius: 25,
-    padding: "10px",
-    outline: "none",
-  },
 
   badge: {
     right: 0,
@@ -96,27 +87,19 @@ const useStyles = makeStyles((theme) => ({
   hide: {
     display: "none !important",
   },
-  searchContainer: {
-    display: "flex",
-    padding: "10px",
-    borderBottom: "2px solid rgba(0, 0, 0, .12)",
-  },
 }));
 
 const TicketsManager = () => {
   const classes = useStyles();
 
-  const [searchParam, setSearchParam] = useState("");
   const [tab, setTab] = useState("open");
   const [tabOpen] = useState("open");
   const [newTicketModalOpen, setNewTicketModalOpen] = useState(false);
   const [showAllTickets, setShowAllTickets] = useState(false);
-  const searchInputRef = useRef();
   const { user } = useContext(AuthContext);
 
   const [, setOpenCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
-  const [selectedTags, setSelectedTags] = useState([]);
 
   const userQueueIds = user.queues.map((q) => q.id);
   const [selectedQueueIds, setSelectedQueueIds] = useState(userQueueIds || []);
@@ -128,24 +111,7 @@ const TicketsManager = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleSearch = (e) => {
-    const searchedTerm = e.target.value.toLowerCase();
-
-
-    setSearchParam(searchedTerm);
-    if (searchedTerm === "") {
-      setTab("open");
-    } else if (tab !== "search") {
-      setTab("search");
-    }
-
-  };
-
-  const handleSelectedTags = (selecteds) => {
-    const tags = selecteds.map(t => t.id);
-    setSelectedTags(tags);
-  }
-
+  
   const handleChangeTab = (e, newValue) => {
     setTab(newValue);
   };
@@ -162,17 +128,6 @@ const TicketsManager = () => {
         modalOpen={newTicketModalOpen}
         onClose={(e) => setNewTicketModalOpen(false)}
       />
-      <Paper elevation={0} square className={classes.searchContainer}>
-        <Search className={classes.searchIcon} />
-        <input
-          type="search"
-          placeholder={i18n.t("tickets.search.placeholder")}
-          className={classes.searchInput}
-          value={searchParam}
-          inputRef={searchInputRef}
-          onChange={handleSearch}
-        />
-      </Paper>
       <Paper elevation={0} square className={classes.tabsHeader}>
         <Tabs
           value={tab}
@@ -265,7 +220,6 @@ const TicketsManager = () => {
       </TabPanel>
 
       <TabPanel value={tab} name="pending" className={classes.ticketsWrapper}>
-      <TagsFilter onFiltered={handleSelectedTags} />
         <TicketsList
           status="pending"
           showAll={true}
@@ -276,18 +230,8 @@ const TicketsManager = () => {
 
 
       <TabPanel value={tab} name="closed" className={classes.ticketsWrapper}>
-      <TagsFilter onFiltered={handleSelectedTags} />
         <TicketsList
           status="closed"
-          showAll={true}
-          selectedQueueIds={selectedQueueIds}
-        />
-      </TabPanel>
-      <TabPanel value={tab} name="search" className={classes.ticketsWrapper}>
-      <TagsFilter onFiltered={handleSelectedTags} />
-        <TicketsList
-          searchParam={searchParam}
-          tags={selectedTags}
           showAll={true}
           selectedQueueIds={selectedQueueIds}
         />
