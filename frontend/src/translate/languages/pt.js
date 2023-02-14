@@ -335,7 +335,7 @@ const messages = {
         pendingHeader: "Aguardando",
         assignedHeader: "Atendendo",
         noTicketsTitle: "Nada aqui!",
-        noTicketsMessage: "Nenhum ticket encontrado com esse status ou termo pesquisado",
+        noTicketsMessage: "Nenhum ticket em aberto",
         connectionTitle: "Conexão que está sendo utilizada atualmente.",
         items: {
           queueless: "Sem Setor",
