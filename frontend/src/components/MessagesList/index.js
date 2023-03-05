@@ -601,7 +601,7 @@ const MessagesList = ({ ticketId, isGroup }) => {
       if (messageTicket !== previousMessageTicket) {
         return (
           <div key={`ticket-${message.id}`} className={classes.ticketNumber}>
-            #Chamado: {messageTicket}
+            #ticket: {messageTicket}
             <hr />
           </div>
         );

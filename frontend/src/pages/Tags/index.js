@@ -1,9 +1,8 @@
-import React, { useContext, useState, useEffect, useReducer, useCallback } from "react";
+import React, { useState, useEffect, useReducer, useCallback } from "react";
 import { toast } from "react-toastify";
 import openSocket from "socket.io-client";
 
 import { makeStyles } from "@material-ui/core/styles";
-import { CSVLink } from "react-csv";
 import {
   Button,
   IconButton,
@@ -22,7 +21,6 @@ import {
   AddCircleOutline,
   DeleteForever,
   DeleteOutline,
-  Archive,
   Edit,
   Search
 } from "@material-ui/icons";
@@ -38,9 +36,6 @@ import TableRowSkeleton from "../../components/TableRowSkeleton";
 import TagModal from "../../components/TagModal";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import toastError from "../../errors/toastError";
-import { Can } from "../../components/Can"
-import { AuthContext } from "../../context/Auth/AuthContext";
-
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_TAGS") {
@@ -114,7 +109,6 @@ const Tags = () => {
   const [searchParam, setSearchParam] = useState("");
   const [tags, dispatch] = useReducer(reducer, []);
   const [tagModalOpen, setTagModalOpen] = useState(false);
-  const { user } = useContext(AuthContext);
 
   const fetchTags = useCallback(async () => {
     try {
@@ -228,13 +222,13 @@ const Tags = () => {
       <ConfirmationModal
         title={
           deletingTag ? `${i18n.t("tags.confirmationModal.deleteTitle")}`
-            : `${i18n.t("tags.confirmationModal.deleteAllTitle")}`
+          : `${i18n.t("tags.confirmationModal.deleteAllTitle")}`
         }
         open={confirmModalOpen}
         onClose={setConfirmModalOpen}
-        onConfirm={() =>
+        onConfirm={() => 
           deletingTag ? handleDeleteTag(deletingTag.id)
-            : handleDeleteAllTags(deletingAllTags)
+         : handleDeleteAllTags(deletingAllTags)
         }
       >
         {
@@ -274,62 +268,18 @@ const Tags = () => {
               <AddCircleOutline />
             </Button>
           </Tooltip>
-
-
-
-
-          <Can
-            role={user.profile}
-            perform="drawer-admin-items:view"
-            yes={() => (//Função que identifica o usuario e bloqueia a visão caso não seja admin
-
-              <CSVLink
-                className={classes.csvbtn}
-                separator=";"
-                filename="mkthub-contacts.csv"
-                data={tags.flatMap((tag) => tag.contacts.map((contact) => ({
-                  tagName: tag.name,
-                  contactName: contact.name,
-                  contactNumber: contact.number
-                })))}>
-
-
-                <Tooltip title={i18n.t("tags.buttons.download")}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                  >
-                    <Archive />
-                  </Button>
-                </Tooltip>
-              </CSVLink>
-
-            )}
-          />
-
-          <Can
-            role={user.profile}
-            perform="drawer-admin-items:view"
-            yes={() => (//Função que identifica o usuario e bloqueia a visão caso não seja admin
-
-              <Tooltip Tooltip title={i18n.t("tags.buttons.deleteAll")}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={(e) => {
-                    setConfirmModalOpen(true);
-                    setDeletingAllTags(tags);
-                  }}
-                >
-                  <DeleteForever />
-                </Button>
-              </Tooltip>
-
-            )}
-          />
-
-
-
+          <Tooltip title={i18n.t("tags.buttons.deleteAll")}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={(e) => {
+                setConfirmModalOpen(true);
+                setDeletingAllTags(tags);
+              }}
+            >
+              <DeleteForever />
+            </Button>
+          </Tooltip>
         </MainHeaderButtonsWrapper>
       </MainHeader>
       <Paper
@@ -372,27 +322,18 @@ const Tags = () => {
                       size="small"
                       onClick={() => handleEditTag(tag)}
                     >
-                      <Edit color="secondary" />
+                      <Edit color="secondary"/>
                     </IconButton>
 
-
-                    <Can
-                      role={user.profile}
-                      perform="drawer-admin-items:view"
-                      yes={() => (//Função que identifica o usuario e bloqueia a visão caso não seja admin
-                        <IconButton
-                          size="small"
-                          onClick={(e) => {
-                            setConfirmModalOpen(true);
-                            setDeletingTag(tag);
-                          }}
-                        >
-                          <DeleteOutline color="secondary" />
-                        </IconButton>
-
-                      )}
-                    />
-
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        setConfirmModalOpen(true);
+                        setDeletingTag(tag);
+                      }}
+                    >
+                      <DeleteOutline color="secondary"/>
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}

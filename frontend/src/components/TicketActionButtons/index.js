@@ -92,17 +92,6 @@ const TicketActionButtons = ({ ticket }) => {
 					>
 						{i18n.t("messagesList.header.buttons.resolve")}
 					</ButtonWithSpinner>
-
-					{/* <ButtonWithSpinner
-						loading={loading}
-						size="small"
-						variant="contained"
-						color="primary"
-						onClick={e => handleUpdateTicketStatus(e, "finish", user?.id)}
-					>
-						{i18n.t("messagesList.header.buttons.finish")}
-					</ButtonWithSpinner> */}
-
 					<IconButton
 						color="primary"
 						onClick={handleOpenTicketOptionsMenu}>
@@ -121,7 +110,7 @@ const TicketActionButtons = ({ ticket }) => {
 				perform="drawer-admin-items:view"
 				yes={() => (
 					<>
-						{/* {ticket.status === "pending" && (
+						{ticket.status === "pending" && (
 							<ButtonWithSpinner
 								loading={loading}
 								size="small"
@@ -131,7 +120,7 @@ const TicketActionButtons = ({ ticket }) => {
 							>
 								{i18n.t("messagesList.header.buttons.accept")}
 							</ButtonWithSpinner>
-						)} */}
+						)}
 					</>
 				)}
 			/>

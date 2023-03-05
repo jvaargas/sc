@@ -31,17 +31,6 @@ const TicketOptionsMenu = ({ ticket, menuOpen, handleClose, anchorEl }) => {
 		}
 	};
 
-	const handleUpdateTicketStatus = async (e, status, userId) => {
-		try {
-			await api.put(`/tickets/${ticket.id}`, {
-				status: status,
-				userId: userId,
-			});
-
-		} catch (err) {
-		}
-	};
-
 	const handleOpenConfirmationModal = e => {
 		setConfirmationOpen(true);
 		handleClose();
@@ -79,10 +68,6 @@ const TicketOptionsMenu = ({ ticket, menuOpen, handleClose, anchorEl }) => {
 				<MenuItem onClick={handleOpenTransferModal}>
 					{i18n.t("ticketOptionsMenu.transfer")}
 				</MenuItem>
-				<MenuItem onClick={e => handleUpdateTicketStatus(e, "closed", null)}>
-
-					{i18n.t("messagesList.header.buttons.finish")}
-				</MenuItem>
 				<Can
 					role={user.profile}
 					perform="ticket-options:deleteTicket"
@@ -94,9 +79,11 @@ const TicketOptionsMenu = ({ ticket, menuOpen, handleClose, anchorEl }) => {
 				/>
 			</Menu>
 			<ConfirmationModal
-				title={`${i18n.t("ticketOptionsMenu.confirmationModal.title")}${ticket.id
-					} ${i18n.t("ticketOptionsMenu.confirmationModal.titleFrom")} ${ticket.contact.name
-					}?`}
+				title={`${i18n.t("ticketOptionsMenu.confirmationModal.title")}${
+					ticket.id
+				} ${i18n.t("ticketOptionsMenu.confirmationModal.titleFrom")} ${
+					ticket.contact.name
+				}?`}
 				open={confirmationOpen}
 				onClose={setConfirmationOpen}
 				onConfirm={handleDeleteTicket}

@@ -6,8 +6,8 @@ module.exports = {
       "Users",
       [
         {
-          name: "mkthub",
-          email: "admin@mkthub.tech",
+          name: "Press-Ticket",
+          email: "admin@pressticket.com.br",
           passwordHash: "$2a$08$WaEmpmFDD/XkDqorkpQ42eUZozOqRCPkPcTkmHHMyuTGUOkI8dHsq",
           profile: "admin",
           tokenVersion: 0,

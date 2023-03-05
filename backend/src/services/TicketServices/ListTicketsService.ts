@@ -46,7 +46,7 @@ const ListTicketsService = async ({
       model: Contact,
       as: "contact",
       attributes: ["id", "name", "number", "profilePicUrl"],
-      // include: ["extraInfo", "contactTags", "tags"]
+      include: ["extraInfo", "contactTags", "tags"]
     },
     {
       model: Queue,
@@ -133,7 +133,7 @@ const ListTicketsService = async ({
     };
   }
 
-  const limit = 50;
+  const limit = 999;
   const offset = limit * (+pageNumber - 1);
 
   const { count, rows: tickets } = await Ticket.findAndCountAll({

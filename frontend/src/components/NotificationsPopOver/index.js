@@ -50,7 +50,6 @@ const NotificationsPopOver = () => {
 	const anchorEl = useRef();
 	const [isOpen, setIsOpen] = useState(false);
 	const [notifications, setNotifications] = useState([]);
-	const { profile, queues } = user;
 
 	const [, setDesktopNotifications] = useState([]);
 
@@ -71,15 +70,8 @@ const NotificationsPopOver = () => {
 	}, [play]);
 
 	useEffect(() => {
-		const queueIds = queues.map((q) => q.id);
-		const filteredTickets = tickets.filter((t) => queueIds.indexOf(t.queueId) > -1);
-
-		if (profile === "user") {
-			setNotifications(filteredTickets);
-		} else {
-			setNotifications(tickets);
-		}
-	}, [tickets, queues, profile]);
+		setNotifications(tickets);
+	}, [tickets]);
 
 	useEffect(() => {
 		ticketIdRef.current = ticketIdUrl;
@@ -87,7 +79,6 @@ const NotificationsPopOver = () => {
 
 	useEffect(() => {
 		const socket = openSocket();
-		const queueIds = queues.map((q) => q.id);
 
 		socket.on("connect", () => socket.emit("joinNotification"));
 
@@ -117,15 +108,13 @@ const NotificationsPopOver = () => {
 		});
 
 		socket.on("appMessage", data => {
+			const UserQueues = user.queues.findIndex((users) => (users.id === data.ticket.queueId));
 			if (
-				data.action === "create" &&
+				(data.action === "create" &&
 				!data.message.read &&
 				(data.ticket.userId === user?.id || !data.ticket.userId)
+				&& (UserQueues !== -1 || !data.ticket.queueId))
 			) {
-				if (profile === 'user' && (queueIds.indexOf(data.ticket.queue?.id) === -1 || data.ticket.queue === null)) {
-					return;
-				}
-
 				setNotifications(prevState => {
 					const ticketIndex = prevState.findIndex(t => t.id === data.ticket.id);
 					if (ticketIndex !== -1) {
@@ -139,7 +128,7 @@ const NotificationsPopOver = () => {
 					(data.message.ticketId === ticketIdRef.current &&
 						document.visibilityState === "visible") ||
 					(data.ticket.userId && data.ticket.userId !== user?.id) ||
-					data.ticket.isGroup || data.ticket.chatbot;
+					data.ticket.isGroup;
 
 				if (shouldNotNotificate) return;
 
@@ -150,7 +139,7 @@ const NotificationsPopOver = () => {
 		return () => {
 			socket.disconnect();
 		};
-	}, [user, profile, queues]);
+	}, [user]);
 
 	const handleNotifications = data => {
 		const { message, contact, ticket } = data;

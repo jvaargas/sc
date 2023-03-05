@@ -109,7 +109,7 @@ export const update = async (
     }
   }
 
-  if (ticket.status === "closed" && ticket.isGroup === false && ticket.user !== null) {
+  if (ticket.status === "closed" && ticket.isGroup === false) {
     const whatsapp = await ShowWhatsAppService(ticket.whatsappId);
 
     const { farewellMessage } = whatsapp;
@@ -120,10 +120,6 @@ export const update = async (
         ticket
       });
     }
-  }
-
-  if (ticket.status === "closed" && ticket.isGroup === false && ticket.user === null) {
-    
   }
 
   return res.status(200).json(ticket);

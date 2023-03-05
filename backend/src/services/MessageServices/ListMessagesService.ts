@@ -2,7 +2,6 @@ import AppError from "../../errors/AppError";
 import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 import ShowTicketService from "../TicketServices/ShowTicketService";
-import isQueueIdHistoryBlocked from "./isQueueIdHistoryBlocked";
 import { Op } from "sequelize";
 
 interface Request {
@@ -31,86 +30,41 @@ const ListMessagesService = async ({
   const limit = 20;
   const offset = limit * (+pageNumber - 1);
 
-  const isBlocked = await isQueueIdHistoryBlocked();
-
-  if (isBlocked === false) {
-
-    const { count, rows: messages } = await Message.findAndCountAll({
-      //where: { ticketId },
-      //where: {contactid : ticket.contactId},
-      limit,
-      include: [
-        "contact",
-        {
-          model: Message,
-          as: "quotedMsg",
-          include: ["contact"]
-        },
-        {
-          model: Ticket,
-          where: {
-            contactId: ticket.contactId,
-            whatsappId: ticket.whatsappId,
-            queueId: {
-              [Op.or]: [ticket.queueId, null],
-            },
+  const { count, rows: messages } = await Message.findAndCountAll({
+    //where: { ticketId },
+    //where: {contactid : ticket.contactId},
+    limit,
+    include: [
+      "contact",
+      {
+        model: Message,
+        as: "quotedMsg",
+        include: ["contact"]
+      },
+      {
+        model: Ticket,
+        where: {
+          contactId: ticket.contactId,
+          whatsappId: ticket.whatsappId,
+          queueId: {
+            [Op.or]: [ticket.queueId, null],
           },
-          required: true,
-        }
-      ],
-      offset,
-      order: [["createdAt", "DESC"]]
-    });
-
-    const hasMore = count > offset + messages.length;
-    return {
-      messages: messages.reverse(),
-      ticket,
-      count,
-      hasMore
-    };
-  } else {
-
-
-    const { count, rows: messages } = await Message.findAndCountAll({
-      //where: { ticketId },
-      //where: {contactid : ticket.contactId},
-      limit,
-      include: [
-        "contact",
-        {
-          model: Message,
-          as: "quotedMsg",
-          include: ["contact"]
         },
-        {
-          model: Ticket,
-          where: {
-            contactId: ticket.contactId,
-            whatsappId: ticket.whatsappId
-          },
-          required: true,
-        }
-      ],
-      offset,
-      order: [["createdAt", "DESC"]]
-    });
+        required: true,
+      }
+    ],
+    offset,
+    order: [["createdAt", "DESC"]]
+  });
 
-    const hasMore = count > offset + messages.length;
-    return {
-      messages: messages.reverse(),
-      ticket,
-      count,
-      hasMore
-    };
+  const hasMore = count > offset + messages.length;
 
-  }
-
-
-
-
-
-
+  return {
+    messages: messages.reverse(),
+    ticket,
+    count,
+    hasMore
+  };
 };
 
 export default ListMessagesService;

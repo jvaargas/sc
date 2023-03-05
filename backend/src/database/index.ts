@@ -12,7 +12,6 @@ import UserQueue from "../models/UserQueue";
 import QuickAnswer from "../models/QuickAnswer";
 import Tag from "../models/Tag";
 import ContactTag from "../models/ContactTag";
-import UserRating from "../models/UserRating";
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -33,8 +32,7 @@ const models = [
   UserQueue,
   QuickAnswer,
   Tag,
-  ContactTag,
-  UserRating
+  ContactTag
 ];
 
 sequelize.addModels(models);

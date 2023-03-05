@@ -100,6 +100,11 @@ const MainListItems = (props) => {
   return (
     <div onClick={drawerClose}>
       <ListItemLink
+        to="/"
+        primary="Dashboard"
+        icon={<DashboardOutlined />}
+      />
+      <ListItemLink
         to="/tickets"
         primary={i18n.t("mainDrawer.listItems.tickets")}
         icon={<WhatsApp />}
@@ -131,11 +136,6 @@ const MainListItems = (props) => {
                   <SyncAlt />
                 </Badge>
               }
-            />
-            <ListItemLink
-              to="/"
-              primary="Dashboard"
-               icon={<DashboardOutlined />}
             />
             <ListItemLink
               to="/users"

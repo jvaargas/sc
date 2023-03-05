@@ -1,7 +1,6 @@
 import { Op } from "sequelize";
 import Tag from "../../models/Tag";
 import ContactTag from "../../models/ContactTag";
-import Contact from "../../models/Contact"; // Add dados de contacts
 
 interface Request {
   searchParam?: string;
@@ -19,7 +18,7 @@ const ListService = async ({
   pageNumber = "1"
 }: Request): Promise<Response> => {
   let whereCondition = {};
-  const limit = 9999; //Aumenta o limite de apresentações dos dados
+  const limit = 20;
   const offset = limit * (+pageNumber - 1);
 
   if (searchParam) {
@@ -36,10 +35,7 @@ const ListService = async ({
     limit,
     offset,
     order: [["name", "ASC"]],
-    include: [
-      { model: ContactTag, attributes: ["tagId"] },
-      { model: Contact, through: { attributes: [] } } //Add funcition que busca também o contato vinculado a tag
-    ]
+    include: [{ model: ContactTag, attributes: ["tagId"] }]
   });
 
   const hasMore = count > offset + tags.length;
