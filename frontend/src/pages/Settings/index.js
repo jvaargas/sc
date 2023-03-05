@@ -186,19 +186,19 @@ const Settings = () => {
 				</Paper>
 
 				<Typography variant="body2" gutterBottom></Typography>
-				
 				<Paper className={classes.paper}>
-					<Tooltip title={i18n.t("settings.settings.allTicket.note")}>
+					<Tooltip title={i18n.t("settings.settings.allHistoric.note")}>
 						<FormControlLabel
 							control={
 								<IOSSwitch
-									checked={settings && settings.length > 0 && getSettingValue("allTicket") === "enabled"}
-									onChange={handleChangeBooleanSetting} name="allTicket"
+									checked={settings && settings.length > 0 && getSettingValue("allHistoric") === "enabled"}
+									onChange={handleChangeBooleanSetting} name="allHistoric"
 								/>}
-							label={i18n.t("settings.settings.allTicket.name")}
+							label={i18n.t("settings.settings.allHistoric.name")}
 						/>
 					</Tooltip>
 				</Paper>
+
 
 				<Typography variant="body2" gutterBottom></Typography>
 
@@ -228,6 +228,7 @@ const Settings = () => {
 						/>
 					</Tooltip>
 				</Paper>
+				
 
 				<Typography variant="body2" gutterBottom></Typography>
 				<Paper className={classes.paper}>
@@ -270,6 +271,22 @@ const Settings = () => {
 						/>
 					</Tooltip>
 				</Paper>
+
+				<Typography variant="body2" gutterBottom></Typography>
+				<Paper className={classes.paper}>
+					<Tooltip title={i18n.t("settings.settings.allTicket.note")}>
+						<FormControlLabel
+							control={
+								<IOSSwitch
+									checked={settings && settings.length > 0 && getSettingValue("allTicket") === "enabled"}
+									onChange={handleChangeBooleanSetting} name="allTicket"
+								/>}
+							label={i18n.t("settings.settings.allTicket.name")}
+						/>
+					</Tooltip>
+				</Paper>
+
+				
 
 				<Typography variant="body2" gutterBottom></Typography>
 					<Tooltip title={i18n.t("settings.settings.timeCreateNewTicket.note")}>

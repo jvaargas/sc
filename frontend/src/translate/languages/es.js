@@ -36,6 +36,7 @@ const messages = {
       messageVariablesPicker: {
         label: "Variables disponibles",
         vars: {
+          contactFirstName: "Primer nombre",
           contactName: "Nombre",
           user: "Asistente",
           greeting: "Saludo",
@@ -208,6 +209,7 @@ const messages = {
           actions: "Acción"
         },
         toasts: {
+          download: "Descargar",
           deleted: "¡Etiqueta eliminada con éxito!",
           deletedAll: "¡Todas las etiquetas se eliminaron con éxito!",
         },
@@ -477,8 +479,16 @@ const messages = {
             },
           },
           allTicket: {
-            name: "Todo el mundo puede ver el ticket sin departamento",
-            note: "Active esta función para que todos los usuarios vean los boletos sin sector",
+            name: "Todo el mundo puede ver el ticket sin departamento.",
+            note: "Active esta función para que todos los usuarios vean los boletos sin sector.",
+            options: {
+              enabled: "Habilitado",
+              disabled: "Deshabilitado",
+            },
+          },
+          allHistoric: {
+            name: "Todos pueden ver el historial de mensajes del cliente.",
+            note: "Activa esta función para que todos los usuarios vean el historial del cliente, si está desactivada solo es posible ver dentro de los sectores.",
             options: {
               enabled: "Habilitado",
               disabled: "Deshabilitado",

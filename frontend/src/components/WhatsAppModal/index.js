@@ -63,6 +63,7 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
 		name: "",
 		greetingMessage: "",
 		farewellMessage: "",
+		ratingMessage: "",
 		isDefault: false,
 		isDisplay: false
 	};
@@ -208,6 +209,23 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
 										margin="dense"
 									/>
 								</div>
+								{/* <div>
+									<Field
+										as={TextField}
+										label={i18n.t("whatsappModal.form.ratingMessage")}
+										type="ratingMessage"
+										multiline
+										rows={5}
+										fullWidth
+										name="ratingMessage"
+										helperText={i18n.t("whatsappModal.form.instructionRatingMessage")}
+										error={
+											touched.instructionRatingMessage && Boolean(errors.instructionRatingMessage)
+										}
+										variant="outlined"
+										margin="dense"
+									/>
+								</div> */}
 								<QueueSelect
 									selectedQueueIds={selectedQueueIds}
 									onChange={selectedIds => setSelectedQueueIds(selectedIds)}

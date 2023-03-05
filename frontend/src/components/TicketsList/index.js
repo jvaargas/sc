@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useReducer, useContext } from "react";
 import openSocket from "../../services/socket-io";
 
-import {
-	List,
-	makeStyles,
-	Paper
-} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import List from "@material-ui/core/List";
+import Paper from "@material-ui/core/Paper";
 
 import TicketListItem from "../TicketListItem";
 import TicketsListSkeleton from "../TicketsListSkeleton";
@@ -16,6 +14,8 @@ import { AuthContext } from "../../context/Auth/AuthContext";
 
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
+import { toast } from "react-toastify";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
 	ticketsListWrapper: {
@@ -168,11 +168,13 @@ const TicketsList = (props) => {
 		tags,
 	} = props;
 	const classes = useStyles();
+	const history = useHistory();
 	const [pageNumber, setPageNumber] = useState(1);
 	const [ticketsList, dispatch] = useReducer(reducer, []);
 	const { user } = useContext(AuthContext);
 	const { profile, queues } = user;
 	const [settings, setSettings] = useState([]);
+
 
 	useEffect(() => {
 		dispatch({ type: "RESET" });
@@ -188,6 +190,8 @@ const TicketsList = (props) => {
 		queueIds: JSON.stringify(selectedQueueIds),
 	});
 
+
+
 	useEffect(() => {
 		const fetchSession = async () => {
 			try {
@@ -200,34 +204,60 @@ const TicketsList = (props) => {
 		fetchSession();
 	}, []);
 
+
+
+	const handleChangeBooleanSetting = async e => {
+		const selectedValue = e.target.checked ? "enabled" : "disabled";
+		const settingKey = e.target.name;
+
+		try {
+			await api.put(`/settings/${settingKey}`, {
+				value: selectedValue,
+			});
+			toast.success(i18n.t("settings.success"));
+			history.go(0);
+		} catch (err) {
+			toastError(err);
+		}
+	};
+
+
+
 	useEffect(() => {
+
 		const queueIds = queues.map((q) => q.id);
 		const filteredTickets = tickets.filter((t) => queueIds.indexOf(t.queueId) > -1);
-
 		const getSettingValue = key => {
 			const { value } = settings.find(s => s.key === key);
 			return value;
 		};
 		const allticket = settings && settings.length > 0 && getSettingValue("allTicket") === "enabled";
 
+
+		
+
+		// Função para identificação liberação da settings 
 		if (allticket === true) {
-			
+			//Verificação de perfil liberado para ver chamados liberando todos a verem
 			if (profile === "") {
 				dispatch({ type: "LOAD_TICKETS", payload: filteredTickets });
-
-			} else {
+				
+			}else{
 				dispatch({ type: "LOAD_TICKETS", payload: tickets });
 			}
 		} else {
-			
+			//Verificação de perfil liberado para ver chamados, bloqueando user de verem
 			if (profile === "user") {
 				dispatch({ type: "LOAD_TICKETS", payload: filteredTickets });
-
-			} else {
+				
+			}else{
 				dispatch({ type: "LOAD_TICKETS", payload: tickets });
 			}
 		}
-		// eslint-disable-next-line
+
+
+
+
 	}, [tickets, status, searchParam, queues, profile]);
 
 	useEffect(() => {

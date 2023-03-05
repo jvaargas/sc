@@ -2,6 +2,7 @@ import { join } from "path";
 import { promisify } from "util";
 import { writeFile } from "fs";
 import * as Sentry from "@sentry/node";
+import { head, isNull, isNil } from "lodash";
 
 import {
   Contact as WbotContact,
@@ -26,6 +27,8 @@ import { debounce } from "../../helpers/Debounce";
 import UpdateTicketService from "../TicketServices/UpdateTicketService";
 import CreateContactService from "../ContactServices/CreateContactService";
 import formatBody from "../../helpers/Mustache";
+import UserRating from "../../models/UserRating";
+import SendWhatsAppMessage from "./SendWhatsAppMessage";
 
 interface Session extends Client {
   id?: number;
@@ -118,15 +121,14 @@ const verifyMediaMessage = async (
 const prepareLocation = (msg: WbotMessage): WbotMessage => {
   const gmapsUrl = `https://maps.google.com/maps?q=${msg.location.latitude}%2C${msg.location.longitude}&z=17`;
   msg.body = `data:image/png;base64,${msg.body}|${gmapsUrl}`;
-  msg.body += `|${
-    msg.location.description
-      ? msg.location.description
-      : `${msg.location.latitude}, ${msg.location.longitude}`
-  }`;
+  msg.body += `|${msg.location.description
+    ? msg.location.description
+    : `${msg.location.latitude}, ${msg.location.longitude}`
+    }`;
   return msg;
 };
 
-const verifyMessage = async (
+export const verifyMessage = async (
   msg: WbotMessage,
   ticket: Ticket,
   contact: Contact
@@ -168,6 +170,62 @@ const verifyQueue = async (
   );
 
   if (queues.length === 1) {
+    const selectedOption = '1';
+
+    const choosenQueue = queues[+selectedOption - 1];
+
+    if (choosenQueue) {
+      const Hr = new Date();
+
+      const hh: number = Hr.getHours() * 60 * 60;
+      const mm: number = Hr.getMinutes() * 60;
+      const hora = hh + mm;
+
+      const inicio: string = choosenQueue.startWork;
+      const hhinicio = Number(inicio.split(":")[0]) * 60 * 60;
+      const mminicio = Number(inicio.split(":")[1]) * 60;
+      const horainicio = hhinicio + mminicio;
+
+      const termino: string = choosenQueue.endWork;
+      const hhtermino = Number(termino.split(":")[0]) * 60 * 60;
+      const mmtermino = Number(termino.split(":")[1]) * 60;
+      const horatermino = hhtermino + mmtermino;
+
+      if (hora < horainicio || hora > horatermino) {
+        const body = formatBody(`\u200e${choosenQueue.absenceMessage}`, ticket);
+        const debouncedSentMessage = debounce(
+          async () => {
+            const sentMessage = await wbot.sendMessage(
+              `${contact.number}@c.us`,
+              body
+            );
+            verifyMessage(sentMessage, ticket, contact);
+          },
+          3000,
+          ticket.id
+        );
+
+        debouncedSentMessage();
+      } else {
+        await UpdateTicketService({
+          ticketData: { queueId: choosenQueue.id },
+          ticketId: ticket.id
+        });
+
+        const chat = await msg.getChat();
+        await chat.sendStateTyping();
+
+        const body = formatBody(`\u200e${choosenQueue.greetingMessage}`, ticket);
+
+        const sentMessage = await wbot.sendMessage(
+          `${contact.number}@c.us`,
+          body
+        );
+
+        await verifyMessage(sentMessage, ticket, contact);
+      }
+    }
+
     await UpdateTicketService({
       ticketData: { queueId: queues[0].id },
       ticketId: ticket.id
@@ -239,9 +297,8 @@ const verifyQueue = async (
     queues.forEach((queue, index) => {
       if (queue.startWork && queue.endWork) {
         if (isDisplay) {
-          options += `*${index + 1}* - ${queue.name} das ${
-            queue.startWork
-          } as ${queue.endWork}\n`;
+          options += `*${index + 1}* - ${queue.name} das ${queue.startWork
+            } as ${queue.endWork}\n`;
         } else {
           options += `*${index + 1}* - ${queue.name}\n`;
         }
@@ -309,7 +366,7 @@ const handleMessage = async (
       msg.type === "e2e_notification" ||
       msg.type === "notification_template" ||
       msg.from === "status@broadcast" ||
-      msg.author != null ||
+      // msg.author === null ||
       chat.isGroup
     ) {
       return;
@@ -320,7 +377,7 @@ const handleMessage = async (
   try {
     let msgContact: WbotContact;
     let groupContact: Contact | undefined;
-
+    // console.log(msg)
     if (msg.fromMe) {
       // messages sent automatically by wbot have a special character in front of it
       // if so, this message was already been stored in database;
@@ -371,6 +428,22 @@ const handleMessage = async (
       unreadMessages,
       groupContact
     );
+
+    try {
+      if (!msg.fromMe) {
+        const ratePending = await verifyRating(ticket);
+        /**
+         * Tratamento para avaliação do atendente
+         */
+        if (ratePending) {
+          handleRating(msg, ticket);
+          return;
+        }
+      }
+    } catch (e) {
+      Sentry.captureException(e);
+      console.log(e);
+    }
 
     if (
       unreadMessages === 0 &&
@@ -501,6 +574,70 @@ const handleMessage = async (
   } catch (err) {
     Sentry.captureException(err);
     logger.error(`Error handling whatsapp message: Err: ${err}`);
+  }
+};
+
+const verifyRating = async (ticket: Ticket) => {
+  const record = await UserRating.findOne({
+    where: { ticketId: ticket.id, rate: null }
+  });
+  if (record) {
+    return true;
+  }
+  return false;
+};
+
+const handleRating = async (msg: WbotMessage, ticket: Ticket) => {
+  const io = getIO();
+  let rate: number | null = null;
+
+  const bodyMessage = msg.body;
+
+  if (bodyMessage) {
+    rate = +bodyMessage;
+  }
+
+  if (!Number.isNaN(rate) && Number.isInteger(rate) && !isNull(rate)) {
+    const { farewellMessage } = await ShowWhatsAppService(ticket.whatsappId);
+
+    let finalRate = rate;
+
+    if (rate < 1) {
+      finalRate = 1;
+    }
+    if (rate > 3) {
+      finalRate = 3;
+    }
+
+    const record = await UserRating.findOne({
+      where: {
+        ticketId: ticket.id,
+        rate: null
+      }
+    });
+
+    await record?.update({ rate: finalRate });
+
+    const body = `\u200c${farewellMessage}`;
+    await SendWhatsAppMessage({ body, ticket });
+
+    await ticket.update({
+      queueId: null,
+      userId: null,
+      status: "closed"
+    });
+
+    io.to("open").emit(`ticket`, {
+      action: "delete",
+      ticket,
+      ticketId: ticket.id
+    });
+
+    io.to(ticket.status).to(ticket.id.toString()).emit(`ticket`, {
+      action: "update",
+      ticket,
+      ticketId: ticket.id
+    });
   }
 };
 

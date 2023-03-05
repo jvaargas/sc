@@ -36,6 +36,7 @@ const messages = {
       messageVariablesPicker: {
         label: "Variavéis disponíveis",
         vars: {
+          contactFirstName: "Primeiro Nome",
           contactName: "Nome",
           user: "Atendente",
           greeting: "Saudação",
@@ -50,7 +51,8 @@ const messages = {
       dashboard: {
         charts: {
           perDay: {
-            title: "Tickets hoje: ",
+            title: "Chamados de hoje: ",
+            titleAll: "Todos os Chamados: ",
           },
         },
         messages: {
@@ -121,7 +123,23 @@ const messages = {
           name: "Nome",
           default: "Padrão",
           display: "Exibir horário dos setores",
-          farewellMessage: "Mensagem de despedida"
+          farewellMessage: "Mensagem de despedida",
+          ratingMessage: "Mensagem de avaliação",
+          instructionRatingMessage: "Para habilitar as avaliações, basta preencher este campo",
+          outOfWorkMessage: "Personalize a mensagem quando estiver fora do horário de expediente",
+          startWorkHour: "Expediente: Abertura",
+          endWorkHour: "Expediente: Fechamento",
+          monday: "Segunda",
+          tuesday: "Terça",
+          wednesday: "Quarta",
+          thursday: "Quinta",
+          friday: "Sexta",
+          saturday: "Sábado",
+          sunday: "Domingo",
+          holiday: "Feriado",
+          defineHourExpedient: "Definir horário de expediente",
+          token: "Token",
+          checkHourExpedient: "Checar Horário de Expediente"
         },
         buttons: {
           okAdd: "Adicionar",
@@ -144,8 +162,8 @@ const messages = {
           deleteTitle: "Deletar ",
           deleteAllTitle: "Deletar Todos",
           importTitle: "Importar contatos",
-          deleteMessage: "Tem certeza que deseja deletar este contato? Todos os tickets relacionados serão perdidos.",
-          deleteAllMessage: "Tem certeza que deseja deletar todos os contatos? Todos os tickets relacionados serão perdidos.",
+          deleteMessage: "Tem certeza que deseja deletar este contato? Todos os chamados relacionados serão perdidos.",
+          deleteAllMessage: "Tem certeza que deseja deletar todos os contatos? Todos os chamados relacionados serão perdidos.",
           importMessage: "Deseja importar todos os contatos do telefone?",
         },
         buttons: {
@@ -212,6 +230,7 @@ const messages = {
           deletedAll: "Todas Tags excluídas com sucesso!",
         },
         buttons: {
+          download: "Download",
           add: "Adicionar",
           deleteAll: "Deletar Todos",
         },
@@ -284,7 +303,7 @@ const messages = {
         success: "Atendente salvo com sucesso.",
       },
       chat: {
-        noTicketMessage: "Selecione um ticket para começar a conversar.",
+        noTicketMessage: "Selecione um chamado para começar a conversar.",
       },
       uploads: {
         titles: {
@@ -313,14 +332,14 @@ const messages = {
           search: { title: "Busca" },
         },
         search: {
-          placeholder: "Buscar tickets e mensagens",
+          placeholder: "Buscar chamados e mensagens",
         },
         buttons: {
           showAll: "Todos",
         },
       },
       transferTicketModal: {
-        title: "Transferir Ticket",
+        title: "Transferir chamado",
         fieldLabel: "Digite para buscar um atendente",
         fieldConnectionLabel: "Transferir para conexão",
         fieldQueueLabel: "Transferir para o Setor",
@@ -335,7 +354,7 @@ const messages = {
         pendingHeader: "Aguardando",
         assignedHeader: "Atendendo",
         noTicketsTitle: "Nada aqui!",
-        noTicketsMessage: "Nenhum ticket em aberto",
+        noTicketsMessage: "Nenhum chamado encontrado com esse status ou termo pesquisado",
         connectionTitle: "Conexão que está sendo utilizada atualmente.",
         items: {
           queueless: "Sem Setor",
@@ -357,7 +376,7 @@ const messages = {
         },
       },
       newTicketModal: {
-        title: "Criar Ticket",
+        title: "Criar chamado",
         fieldLabel: "Digite para pesquisar o contato",
         add: "Adicionar",
         buttons: {
@@ -369,7 +388,7 @@ const messages = {
         listItems: {
           dashboard: "Dashboard",
           connections: "Conexões",
-          tickets: "Tickets",
+          tickets: "Chamados",
           contacts: "Contatos",
           quickAnswers: "Respostas Rápidas",
           tags: "Tags",
@@ -413,7 +432,7 @@ const messages = {
         },
         confirmationModal: {
           deleteTitle: "Excluir",
-          deleteMessage: "Você tem certeza? Essa ação não pode ser revertida! Os tickets desse setor continuarão existindo, mas não terão mais nenhuma setor atribuído.",
+          deleteMessage: "Você tem certeza? Essa ação não pode ser revertida! Os chamados desse setor continuarão existindo, mas não terão mais nenhuma setor atribuído.",
         },
       },
       queueSelect: {
@@ -461,7 +480,7 @@ const messages = {
         },
         confirmationModal: {
           deleteTitle: "Excluir",
-          deleteMessage: "Todos os dados do atendente serão perdidos. Os tickets abertos deste atendente serão movidos para a espera.",
+          deleteMessage: "Todos os dados do atendente serão perdidos. Os chamados abertos deste atendente serão movidos para a espera.",
         },
       },
       settings: {
@@ -479,6 +498,14 @@ const messages = {
           allTicket: {
             name: "Todos podem ver o chamado sem departamento",
             note: "Ative essa função para deixar todos os usuarios verem os chamados sem setor",
+            options: {
+              enabled: "Ativado",
+              disabled: "Desativado",
+            },
+          },
+          allHistoric: {
+            name: "Todos podem ver o histórico de mensagem do cliente",
+            note: "Ative essa função para deixar todos os usuarios verem o histórico do cliente, caso desative só é possivel ver dentro dos setores.",
             options: {
               enabled: "Ativado",
               disabled: "Desativado",
@@ -510,7 +537,7 @@ const messages = {
           },
           closeTicketApi: {
             name: "Encerrar Ticket enviado API",
-            note: "Fecha automaticamente o ticket quando enviado por API",
+            note: "Fecha automaticamente o chamado quando enviado por API",
             options: {
               enabled: "Ativado",
               disabled: "Desativado",
@@ -524,9 +551,38 @@ const messages = {
               disabled: "Desativado",
             },
           },
+          allTicket: {
+            name: "Todos podem ver o chamado sem departamento",
+            note: "Ative essa função para deixar todos os usuarios verem os chamados sem setor",
+            options: {
+              enabled: "Ativado",
+              disabled: "Desativado",
+            },
+          },
           timeCreateNewTicket: {
-            name: "Cria novo ticket após",
-            note: "Selecione o tempo que será necessário para abrir um novo ticket, caso o cliente entre em contatos novamente",
+            name: "Cria novo chamado após",
+            note: "Selecione o tempo que será necessário para abrir um novo chamado, caso o cliente entre em contatos novamente",
+            options: {
+              "10": "10 Segundos",
+              "30": "30 Segundos",
+              "60": "1 minuto",
+              "300": "5 minutos",
+              "1800": "30 minutos",
+              "3600": "1 hora",
+              "7200": "2 horas",
+              "21600": "6 horas",
+              "43200": "12 horas",
+              "86400": "24 horas",
+              "604800": "7 dias",
+              "1296000": "15 dias",
+              "2592000": "30 dias",
+            },
+          },
+
+
+          timeDirectNewTicket: {
+            name: "Direcionar chamado sem setor após",
+            note: "Selecione o tempo que será necessário para abrir um novo chamado, caso o cliente entre em contatos novamente",
             options: {
               "10": "10 Segundos",
               "30": "30 Segundos",
@@ -553,12 +609,13 @@ const messages = {
             resolve: "Resolver",
             reopen: "Reabrir", 
             accept: "Aceitar",
+            finish: "Finalizar",
           },
         },
       },
       messagesInput: {
         placeholderOpen: "Digite uma mensagem",
-        placeholderClosed: "Reabra ou aceite esse ticket para enviar uma mensagem.",
+        placeholderClosed: "Reabra ou aceite esse chamado para enviar uma mensagem.",
         signMessage: "Assinar",
       },
       contactDrawer: {
@@ -576,9 +633,9 @@ const messages = {
         delete: "Deletar",
         transfer: "Transferir",
         confirmationModal: {
-          title: "Deletar o ticket ",
+          title: "Deletar o chamado ",
           titleFrom: "do contato ",
-          message: "Atenção! Todas as mensagens relacionadas ao ticket serão perdidas.",
+          message: "Atenção! Todas as mensagens relacionadas ao chamado serão perdidas.",
         },
         buttons: {
           delete: "Excluir",
@@ -609,18 +666,18 @@ const messages = {
         ERR_INVALID_CREDENTIALS: "Erro de autenticação. Por favor, tente novamente.",
         ERR_SENDING_WAPP_MSG: "Erro ao enviar mensagem do WhatsApp. Verifique a página de conexões.",
         ERR_DELETE_WAPP_MSG: "Não foi possível excluir a mensagem do WhatsApp.",
-        ERR_OTHER_OPEN_TICKET: "Já existe um ticket aberto para este contato.",
+        ERR_OTHER_OPEN_TICKET: "Já existe um chamado aberto para este contato.",
         ERR_SESSION_EXPIRED: "Sessão expirada. Por favor entre.",
         ERR_USER_CREATION_DISABLED: "A criação do atendente foi desabilitada pelo administrador.",
         ERR_NO_PERMISSION: "Você não tem permissão para acessar este recurso.",
         ERR_DUPLICATED_CONTACT: "Já existe um contato com este número.",
         ERR_NO_SETTING_FOUND: "Nenhuma configuração encontrada com este ID.",
         ERR_NO_CONTACT_FOUND: "Nenhum contato encontrado com este ID.",
-        ERR_NO_TICKET_FOUND: "Nenhum ticket encontrado com este ID.",
+        ERR_NO_TICKET_FOUND: "Nenhum chamado encontrado com este ID.",
         ERR_NO_USER_FOUND: "Nenhum atendente encontrado com este ID.",
         ERR_NO_WAPP_FOUND: "Nenhum WhatsApp encontrado com este ID.",
         ERR_CREATING_MESSAGE: "Erro ao criar mensagem no banco de dados.",
-        ERR_CREATING_TICKET: "Erro ao criar ticket no banco de dados.",
+        ERR_CREATING_TICKET: "Erro ao criar chamado no banco de dados.",
         ERR_FETCH_WAPP_MSG: "Erro ao buscar a mensagem no WhatsApp, talvez ela seja muito antiga.",
         ERR_QUEUE_COLOR_ALREADY_EXISTS: "Esta cor já está em uso, escolha outra.",
         ERR_WAPP_GREETING_REQUIRED: "A mensagem de saudação é obrigatório quando há mais de um Setor.",
